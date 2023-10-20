@@ -1,21 +1,8 @@
-use std::io::Read;
-use std::net::TcpListener;
-use actix_web::HttpMessage;
-
-fn spawn_app() -> String {
-    let listener = TcpListener::bind("127.0.0.1:0")
-        .expect("Failed to bind to random port");
-    let port = listener.local_addr().unwrap().port();
-    let server = zero2prod::run(listener).expect("Failed to bind address");
-
-    tokio::spawn(server);
-
-    format!("http://127.0.0.1:{}", port)
-}
+mod common;
 
 #[tokio::test]
 async fn health_check_works() {
-    let address = spawn_app();
+    let address = common::spawn_app();
     let client = reqwest::Client::new();
 
     let response = client
