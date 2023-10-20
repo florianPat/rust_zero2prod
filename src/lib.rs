@@ -1,12 +1,13 @@
-use crate::infrastructure::actions::health::health;
+use std::net::TcpListener;
 use actix_web::dev::Server;
-use actix_web::{web, App, HttpServer};
+use actix_web::{App, HttpServer};
+use crate::infrastructure::actions::actions_factory;
 
 mod infrastructure;
 
-pub fn run() -> Result<Server, std::io::Error> {
-    let server = HttpServer::new(|| App::new().route("/health", web::get().to(health)))
-        .bind("127.0.0.1:8000")?
+pub fn run(listener: TcpListener) -> Result<Server, std::io::Error> {
+    let server = HttpServer::new(|| App::new().configure(actions_factory))
+        .listen(listener)?
         .run();
 
     Ok(server)
